@@ -10,7 +10,7 @@
   (reduce
    (fn [headers, ^String name]
      (assoc headers
-       (.toLowerCase name)
+       (lower-case name)
        (->> (.getHeaders message name)
             (seq)
             (clojure.string/join ","))))
@@ -18,8 +18,9 @@
    (seq (.getHeaderNames message))))
 
 (defn- get-body [^HttpMessage message]
-  (when-let [buf (.getContent message)]
-    (.toString buf StandardCharsets/UTF_8)))
+  (let [buf (.getContent message)]
+    (when (pos? (.capacity buf))
+      (.toString buf StandardCharsets/UTF_8))))
 
 (defn- set-headers! [^HttpMessage message, ^Long cseq, headers]
   {:pre [(pos? cseq)]}
