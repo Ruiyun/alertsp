@@ -11,7 +11,7 @@
       (let [msg (.getMessage evt)
             ch (.getChannel evt)]
         (when (map? msg)
-          (.write ch (handler msg)))))
+          (.write ch (assoc (handler msg) :cseq (:cseq msg))))))
     (exceptionCaught [ctx evt]
       (when error-handler (error-handler (.getCause evt))))))
 
