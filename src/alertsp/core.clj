@@ -24,7 +24,7 @@
 
 (defn- set-headers! [^HttpMessage message, ^Long cseq, headers]
   {:pre [(pos? cseq)]}
-  (-> message (.setHeader message RtspHeaders$Names/CSEQ cseq))
+  (-> message (.setHeader RtspHeaders$Names/CSEQ cseq))
   (doseq [[key val-or-vals] (dissoc headers RtspHeaders$Names/CSEQ RtspHeaders$Names/CONTENT_LENGTH)]
     (if (string? val-or-vals)
       (.setHeader message key val-or-vals)
