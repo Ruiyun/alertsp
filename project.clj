@@ -1,4 +1,4 @@
-(defproject alertsp "0.1.0-SNAPSHOT"
+(defproject alertsp "0.2.0-SNAPSHOT"
   :description "A rtsp client & server library based aleph."
   :url "https://github.com/Ruiyun/alertsp"
   :license {:name "Eclipse Public License"
