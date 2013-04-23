@@ -15,7 +15,7 @@
                                      (decode [ctx channel msg]
                                        (netty-response->rtsp-map msg)))
         "netty-request-encoder" (RtspRequestEncoder.)
-        "netty-request->rtsp-map" (proxy [OneToOneEncoder] []
+        "rtsp-map->netty-request" (proxy [OneToOneEncoder] []
                                     (encode [ctx channel msg]
                                       (rtsp-map->netty-request msg)))))
     options)))

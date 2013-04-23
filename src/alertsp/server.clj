@@ -13,7 +13,9 @@
         (when (map? msg)
           (.write ch (assoc (handler msg) :cseq (:cseq msg))))))
     (exceptionCaught [ctx evt]
-      (when error-handler (error-handler (.getCause evt))))))
+      (if error-handler
+        (error-handler (.getChannel evt) (.getCause evt))
+        (.. evt getChannel close)))))
 
 (defn rtsp-server
   ([handler options] (rtsp-server handler nil options))
