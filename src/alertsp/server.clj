@@ -1,17 +1,30 @@
 (ns alertsp.server
   (:require [alertsp.core :refer :all]
             [aleph.netty :as netty])
-  (:import [org.jboss.netty.channel SimpleChannelUpstreamHandler]
+  (:import [java.net InetSocketAddress]
+           [org.jboss.netty.channel SimpleChannelUpstreamHandler]
            [org.jboss.netty.handler.codec.oneone OneToOneEncoder OneToOneDecoder]
            [org.jboss.netty.handler.codec.rtsp RtspRequestDecoder RtspResponseEncoder]))
+
+(defn- parse-addr [^InetSocketAddress addr]
+  {:addr (.. addr getAddress getHostAddress)
+   :port (.getPort addr)})
 
 (defn- handler-wrap [handler error-handler]
   (proxy [SimpleChannelUpstreamHandler] []
     (messageReceived [ctx evt]
       (let [msg (.getMessage evt)
-            ch (.getChannel evt)]
+            ch (.getChannel evt)
+            {r-addr :addr r-port :port} (parse-addr (.getRemoteAddress ch))
+            {l-addr :addr l-port :port} (parse-addr (.getLocalAddress ch))]
         (when (map? msg)
-          (.write ch (assoc (handler msg) :cseq (:cseq msg))))))
+          (.write ch (-> msg
+                         (assoc :remote-addr r-addr
+                                :remote-port r-port
+                                :local-addr l-addr
+                                :local-port l-port)
+                         handler
+                         (assoc :cseq (:cseq msg)))))))
     (exceptionCaught [ctx evt]
       (if error-handler
         (error-handler (.getChannel evt) (.getCause evt))
