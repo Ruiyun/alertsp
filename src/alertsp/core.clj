@@ -28,7 +28,7 @@
                     (#(if content-type (assoc % "content-type" content-type) %))
                     (assoc "cseq" (str cseq))
                     (dissoc "content-length"))]
-    (doseq [[key val-or-vals] headers]
+    (doseq [[^String key, val-or-vals] headers]
       (if (string? val-or-vals)
         (.setHeader message key val-or-vals)
         (doseq [val val-or-vals]
@@ -37,9 +37,9 @@
 
 (defn- set-body! [^HttpMessage message, body]
   (cond
-   (string? body) (let [^ChannelBuffer buffer (ChannelBuffers/copiedBuffer body StandardCharsets/UTF_8)]
+   (string? body) (let [^ChannelBuffer buffer (ChannelBuffers/copiedBuffer ^String body, StandardCharsets/UTF_8)]
                     (.setContent message buffer)
-                    (.setHeader message RtspHeaders$Names/CONTENT_LENGTH (.readableBytes buffer))))
+                    (.setHeader message RtspHeaders$Names/CONTENT_LENGTH, ^Integer (.readableBytes buffer))))
   message)
 
 (defn- get-cseq [^HttpMessage message]
