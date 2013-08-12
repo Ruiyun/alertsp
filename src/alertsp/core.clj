@@ -23,7 +23,7 @@
       (.toString buf StandardCharsets/UTF_8))))
 
 (defn- set-headers! [^HttpMessage message, ^Long cseq, content-type headers]
-  {:pre [(pos? cseq)]}
+  {:pre [(>= cseq 0)]}
   (let [headers (-> (reduce #(assoc %1 (-> %2 key name lower-case) (val %2)) {} headers)
                     (#(if content-type (assoc % "content-type" content-type) %))
                     (assoc "cseq" (str cseq))
